@@ -13,5 +13,32 @@
 	// Surface invisible (zero-width) and ambiguous/homoglyph Unicode in the
 	// editor. Pairs with the code-qa.yml invisible-chars CI check.
 	"editor.unicodeHighlight.invisibleCharacters": true,
-	"editor.unicodeHighlight.ambiguousCharacters": true
+	"editor.unicodeHighlight.ambiguousCharacters": true,
+	"cSpell.words": [
+		"axios",
+		"chatbots",
+		"DONT_ALLOW",
+		"dotenv",
+		"esbuild",
+		"Frontmatter",
+		"genai",
+		"generativelanguage_v1",
+		"google-ai-generativelanguage",
+		"google-generativeai",
+		"google.generativeai",
+		"GosuCoder",
+		"Hyperparameters",
+		"Imagen",
+		"jsonify",
+		"mrubens",
+		"multimodal",
+		"Olympique",
+		"overbroad",
+		"parseability",
+		"Pydantic",
+		"roomodes",
+		"skimmable",
+		"Vitest",
+		"WCAG"
+	]
 }
