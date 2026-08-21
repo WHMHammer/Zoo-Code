@@ -40,7 +40,7 @@ export async function getEnvironmentDetails(cline: Task, includeFileDetails: boo
 		? cline.rooIgnoreController.filterPaths(visibleFilePaths)
 		: visibleFilePaths.map((p) => p.toPosix()).join("\n")
 
-	if (allowedVisibleFiles) {
+	if (allowedVisibleFiles.length) {
 		details += "\n\n# VSCode Visible Files"
 		details += `\n${allowedVisibleFiles}`
 	}
@@ -60,7 +60,7 @@ export async function getEnvironmentDetails(cline: Task, includeFileDetails: boo
 		? cline.rooIgnoreController.filterPaths(openTabPaths)
 		: openTabPaths.map((p) => p.toPosix()).join("\n")
 
-	if (allowedOpenTabs) {
+	if (allowedOpenTabs.length) {
 		details += "\n\n# VSCode Open Tabs"
 		details += `\n${allowedOpenTabs}`
 	}
@@ -158,15 +158,15 @@ export async function getEnvironmentDetails(cline: Task, includeFileDetails: boo
 	// console.log(`[Task#getEnvironmentDetails] terminalDetails: ${terminalDetails}`)
 
 	// Add recently modified files section.
-	const recentlyModifiedFiles = cline.fileContextTracker.getAndClearRecentlyModifiedFiles()
+	cline.fileContextTracker.getAndClearRecentlyModifiedFiles()
 
-	if (recentlyModifiedFiles.length > 0) {
-		details +=
-			"\n\n# Recently Modified Files\nThese files have been modified since you last accessed them (file was just edited so you may need to re-read it before editing):"
-		for (const filePath of recentlyModifiedFiles) {
-			details += `\n${filePath}`
-		}
-	}
+	// if (recentlyModifiedFiles.length > 0) {
+	// 	details +=
+	// 		"\n\n# Recently Modified Files\nThese files have been modified since you last accessed them (file was just edited so you may need to re-read it before editing):"
+	// 	for (const filePath of recentlyModifiedFiles) {
+	// 		details += `\n${filePath}`
+	// 	}
+	// }
 
 	if (terminalDetails) {
 		details += terminalDetails
@@ -224,7 +224,7 @@ export async function getEnvironmentDetails(cline: Task, includeFileDetails: boo
 	details += `\n\n# Current Mode\n`
 	details += `<slug>${currentMode}</slug>\n`
 	details += `<name>${modeDetails.name}</name>\n`
-	details += `<model>${modelId}</model>\n`
+	// details += `<model>${modelId}</model>\n`
 
 	if (includeFileDetails) {
 		details += `\n\n# Current Workspace Directory (${cline.cwd.toPosix()}) Files\n`

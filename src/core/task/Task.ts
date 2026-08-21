@@ -136,6 +136,7 @@ import { validateAndFixToolResultIds } from "./validateToolResultIds"
 import { mergeConsecutiveApiMessages } from "./mergeConsecutiveApiMessages"
 import { prepareApiConversationMessage } from "./apiConversationHistory"
 import { shouldAddUserMessageToHistory } from "./messageCounting"
+import { ToolResultBlockParam } from "@anthropic-ai/sdk/resources"
 
 const MAX_EXPONENTIAL_BACKOFF_SECONDS = 600 // 10 minutes
 const DEFAULT_USAGE_COLLECTION_TIMEOUT_MS = 5000 // 5 seconds
@@ -2135,6 +2136,23 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 								(block) => block.type === "tool_result",
 							) as Anthropic.ToolResultBlockParam[]
 
+							if (
+								responseText &&
+								(!existingToolResults.length ||
+									existingToolResults.at(-1)!.tool_use_id !== toolUseBlocks.at(-1)!.id)
+							) {
+								const contentBlock: ToolResultBlockParam = {
+									tool_use_id: toolUseBlocks.at(-1)!.id,
+									type: "tool_result",
+									content: responseText,
+								}
+
+								existingUserContent.push(contentBlock)
+								responseText = undefined
+
+								existingToolResults.push(contentBlock)
+							}
+
 							const missingToolResponses: Anthropic.ToolResultBlockParam[] = toolUseBlocks
 								.filter(
 									(toolUse) =>
@@ -3620,6 +3638,11 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						throw new Error(
 							`[RooCode#recursivelyMakeRooRequests] task ${this.taskId}.${this.instanceId} aborted`,
 						)
+					}
+
+					if (!this.currentStreamingDidCheckpoint) {
+						await this.checkpointSave(true, false)
+						this.currentStreamingDidCheckpoint = true
 					}
 
 					// If the model did not tool use, then we need to tell it to

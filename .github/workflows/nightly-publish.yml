@@ -16,6 +16,8 @@ jobs:
   publish-prerelease:
     runs-on: ubuntu-latest
     environment: marketplace-prerelease
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -66,9 +68,9 @@ jobs:
           const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
           const [major, minor] = pkg.version.split(".").map(Number)
           const prereleaseMinor = minor % 2 === 0 ? minor + 1 : minor + 2
-          const patch = 100000 + Number(process.env.RUN_NUMBER)
+          const patch = 200000 + Number(process.env.RUN_NUMBER)
 
-          pkg.version = `${major}.${prereleaseMinor}.${patch}`
+          pkg.version = `${major}.${prereleaseMinor}.${patch}+${process.env.GITHUB_SHA}`
           fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, "\t")}\n`)
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `number=${pkg.version}\n`)
           console.log(`Pre-release version set to ${pkg.version}`)
@@ -116,36 +118,17 @@ jobs:
           test "$artifact_name" = "zoo-code"
           test "$artifact_publisher" = "ZooCodeOrganization"
 
-      - name: Publish pre-release to VS Code Marketplace
+      - name: Create GitHub Release
         if: steps.release-check.outputs.skip != 'true'
         env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION_NUMBER: ${{ steps.version.outputs.number }}
         run: |
-          npx @vscode/vsce publish --pre-release --skip-duplicate --packagePath "bin/zoo-code-${VERSION_NUMBER}.vsix"
-          echo "Published or skipped existing ZooCodeOrganization.zoo-code ${VERSION_NUMBER} as a VS Code Marketplace pre-release"
+          tag_name="custom-build"
+          vsix_path="bin/zoo-code-${VERSION_NUMBER}.vsix"
 
-      # The VSIX built above with `vsce package --pre-release` already carries the
-      # Microsoft.VisualStudio.Code.PreRelease manifest property, which is what Open
-      # VSX reads to flag the version. `ovsx publish` ignores --pre-release for an
-      # already-packaged .vsix (it only applies when ovsx does the packaging itself),
-      # so it's intentionally omitted here.
-      #
-      # Open VSX's "latest" alias resolves to the highest semver across stable and
-      # pre-release alike (pre-release only breaks ties at equal major.minor.patch),
-      # so a nightly build can transiently become "latest" until the next stable
-      # release outranks it. This mirrors how Marketplace pre-release users already
-      # track the newest published version, so it's an accepted trade-off here too.
-      - name: Publish pre-release to Open VSX Registry
-        if: steps.release-check.outputs.skip != 'true'
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
-          VERSION_NUMBER: ${{ steps.version.outputs.number }}
-        run: |
-          set -o pipefail
-          publish_output=$(pnpm exec ovsx publish "bin/zoo-code-${VERSION_NUMBER}.vsix" --skip-duplicate 2>&1 | tee /dev/stderr)
-          if echo "$publish_output" | grep -q "is already published"; then
-            echo "ZooCodeOrganization.zoo-code ${VERSION_NUMBER} was already published to Open VSX; skipped."
-          else
-            echo "Published ZooCodeOrganization.zoo-code ${VERSION_NUMBER} as an Open VSX pre-release"
+          if gh release view "$tag_name" >/dev/null 2>&1; then
+            gh release delete "$tag_name"
           fi
+
+          gh release create "$tag_name" --title "Custom Build" "$vsix_path"
