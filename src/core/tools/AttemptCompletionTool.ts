@@ -11,11 +11,6 @@ import { t } from "../../i18n"
 import { BaseTool, ToolCallbacks } from "./BaseTool"
 import { sanitizeToolUseId } from "../../utils/tool-id"
 
-interface AttemptCompletionParams {
-	result: string
-	command?: string
-}
-
 export interface AttemptCompletionCallbacks extends ToolCallbacks {
 	askFinishSubTaskApproval: () => Promise<boolean>
 	toolDescription: () => string
@@ -40,8 +35,7 @@ interface DelegationProvider {
 export class AttemptCompletionTool extends BaseTool<"attempt_completion"> {
 	readonly name = "attempt_completion" as const
 
-	async execute(params: AttemptCompletionParams, task: Task, callbacks: AttemptCompletionCallbacks): Promise<void> {
-		const { result } = params
+	async execute(_params: never, task: Task, callbacks: AttemptCompletionCallbacks): Promise<void> {
 		const { handleError, pushToolResult, askFinishSubTaskApproval, toolCallId } = callbacks
 
 		// Prevent attempt_completion if any tool failed in the current turn
@@ -73,16 +67,9 @@ export class AttemptCompletionTool extends BaseTool<"attempt_completion"> {
 		}
 
 		try {
-			if (!result) {
-				task.consecutiveMistakeCount++
-				task.recordToolError("attempt_completion")
-				pushToolResult(await task.sayAndCreateMissingParamError("attempt_completion", "result"))
-				return
-			}
-
 			task.consecutiveMistakeCount = 0
 
-			await task.say("completion_result", result, undefined, false)
+			await task.say("completion_result", undefined, undefined, false)
 
 			// Whether this attempt_completion call is a stale replay of an already-completed
 			// subtask (user revisiting it from history) rather than a live model-initiated
@@ -123,6 +110,14 @@ export class AttemptCompletionTool extends BaseTool<"attempt_completion"> {
 								parentHistory?.awaitingChildId === task.taskId
 							) {
 								const pendingActionId = toolCallId ? sanitizeToolUseId(toolCallId) : undefined
+								let result = ""
+								for (let i = task.clineMessages.length - 1; i >= 0; i--) {
+									const message = task.clineMessages[i]
+									if (message.type === "say" && message.say === "text") {
+										result = message.text ?? ""
+										break
+									}
+								}
 								if (pendingActionId) {
 									const pendingAction: PendingTaskAction = {
 										kind: "finish_subtask",
@@ -270,21 +265,7 @@ export class AttemptCompletionTool extends BaseTool<"attempt_completion"> {
 	}
 
 	override async handlePartial(task: Task, block: ToolUse<"attempt_completion">): Promise<void> {
-		const result: string | undefined = block.params.result
-		const command: string | undefined = block.params.command
-
-		const lastMessage = task.clineMessages.at(-1)
-
-		if (command) {
-			if (lastMessage && lastMessage.ask === "command") {
-				await task.ask("command", command ?? "", block.partial).catch(() => {})
-			} else {
-				await task.say("completion_result", result ?? "", undefined, false)
-				await task.ask("command", command ?? "", block.partial).catch(() => {})
-			}
-		} else {
-			await task.say("completion_result", result ?? "", undefined, block.partial)
-		}
+		await task.say("completion_result", undefined, undefined, block.partial)
 	}
 
 	/**
