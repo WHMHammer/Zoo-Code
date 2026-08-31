@@ -110,6 +110,7 @@ const COMMENT_PREFIXES = ["#", "//", "--", "/*", "*", "'''", '"""']
 export function parseLines(content: string): LineRecord[] {
 	const lines = content.split("\n")
 	return lines.map((line, index) => {
+		line = line.trimEnd()
 		const trimmed = line.trimStart()
 		const leadingWhitespace = line.length - trimmed.length
 

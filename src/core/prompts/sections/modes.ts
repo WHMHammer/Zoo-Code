@@ -18,6 +18,7 @@ MODES
 
 - These are the currently available modes:
 ${allModes
+	.filter((mode: ModeConfig) => mode.slug !== "code")
 	.map((mode: ModeConfig) => {
 		let description: string
 		if (mode.whenToUse && mode.whenToUse.trim() !== "") {

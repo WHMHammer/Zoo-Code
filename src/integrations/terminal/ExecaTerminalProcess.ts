@@ -1,10 +1,11 @@
-import { execa, ExecaError } from "execa"
+import { execa, ExecaError, type Options as ExecaOptions } from "execa"
 import psTree from "ps-tree"
 import process from "process"
 
 import type { RooTerminal } from "./types"
 import { BaseTerminal } from "./BaseTerminal"
 import { BaseTerminalProcess } from "./BaseTerminalProcess"
+import { PwshNotFoundError, resolveWindowsPwshPath } from "../../utils/shell"
 
 export class ExecaTerminalProcess extends BaseTerminalProcess {
 	private terminalRef: WeakRef<RooTerminal>
@@ -36,11 +37,19 @@ export class ExecaTerminalProcess extends BaseTerminalProcess {
 	public override async run(command: string) {
 		this.command = command
 
+		let pwshPath: string | null = null
+		if (process.platform === "win32") {
+			pwshPath = resolveWindowsPwshPath()
+			if (!pwshPath) {
+				this.terminal.busy = false
+				throw new PwshNotFoundError()
+			}
+		}
+
 		try {
 			this.isHot = true
 
-			this.subprocess = execa({
-				shell: BaseTerminal.getExecaShellPath() || true,
+			const execaOptions: ExecaOptions = {
 				cwd: this.terminal.getCurrentWorkingDirectory(),
 				all: true,
 				// Ignore stdin to ensure non-interactive mode and prevent hanging
@@ -51,7 +60,21 @@ export class ExecaTerminalProcess extends BaseTerminalProcess {
 					LANG: "en_US.UTF-8",
 					LC_ALL: "en_US.UTF-8",
 				},
-			})`${command}`
+			}
+
+			if (process.platform === "win32") {
+				const commandWithExitCode = `${command}\nexit ($LASTEXITCODE ?? $(if ($?) { 0 } else { 1 }))`
+				this.subprocess = execa(
+					pwshPath as string,
+					["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", commandWithExitCode],
+					execaOptions,
+				)
+			} else {
+				this.subprocess = execa({
+					shell: BaseTerminal.getExecaShellPath() || true,
+					...execaOptions,
+				})`${command}`
+			}
 
 			this.pid = this.subprocess.pid
 

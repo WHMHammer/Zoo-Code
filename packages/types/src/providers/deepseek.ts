@@ -16,13 +16,12 @@ export const deepSeekModels = {
 		supportsPromptCache: true,
 		supportsReasoningEffort: ["disable", "low", "high", "max"], // Updated 2026-08-13
 		preserveReasoning: true,
-		reasoningEffort: "high",
+		reasoningEffort: "max",
 		inputPrice: 0, // the inputs are priced as cache read/write, so `inputPrice` should be 0
-		// Static estimates use peak rates; off-peak rates are 50% lower. Effective 2026-08-16.
-		outputPrice: 1.32,
-		cacheWritesPrice: 0.44,
-		cacheReadsPrice: 0.014,
-		description: `DeepSeek-V4-Flash is DeepSeek's fast, cost-efficient V4 model. It supports thinking and non-thinking modes, JSON output, tool calls, chat prefix completion (beta), and FIM completion (beta) in non-thinking mode.`,
+		// 空闲时段人民币价格
+		outputPrice: 4.5,
+		cacheWritesPrice: 1.5,
+		cacheReadsPrice: 0.05,
 	},
 	"deepseek-v4-pro": {
 		displayName: "DeepSeek V4 Pro 0813",
@@ -32,13 +31,26 @@ export const deepSeekModels = {
 		supportsPromptCache: true,
 		supportsReasoningEffort: ["disable", "low", "high", "max"], // Updated 2026-08-13
 		preserveReasoning: true,
-		reasoningEffort: "high",
+		reasoningEffort: "max",
 		inputPrice: 0, // the inputs are priced as cache read/write, so `inputPrice` should be 0
-		// Static estimates use peak rates; off-peak rates are 50% lower. Effective 2026-08-16.
-		outputPrice: 3.96,
-		cacheWritesPrice: 1.32,
-		cacheReadsPrice: 0.044,
-		description: `DeepSeek-V4-Pro-0813 is DeepSeek's strongest V4 model for reasoning, coding, long-context, and agentic workloads. It supports thinking and non-thinking modes, JSON output, tool calls, chat prefix completion (beta), and FIM completion (beta) in non-thinking mode.`,
+		// 空闲时段人民币价格
+		outputPrice: 13.5,
+		cacheWritesPrice: 4.5,
+		cacheReadsPrice: 0.15,
+	},
+	"deepseek-v4-flash-vision-exp": {
+		maxTokens: 384_000,
+		contextWindow: 1_000_000,
+		supportsImages: true,
+		supportsPromptCache: true,
+		supportsReasoningEffort: ["disable", "low", "high", "max"], // Updated 2026-08-13
+		preserveReasoning: true,
+		reasoningEffort: "max",
+		inputPrice: 0, // the inputs are priced as cache read/write, so `inputPrice` should be 0
+		// 空闲时段人民币价格
+		outputPrice: 4.5,
+		cacheWritesPrice: 1.5,
+		cacheReadsPrice: 0.05,
 	},
 } as const satisfies Record<string, ModelInfo>
 
