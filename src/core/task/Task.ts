@@ -4054,6 +4054,11 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						)
 					}
 
+					if (!this.currentStreamingDidCheckpoint) {
+						await this.checkpointSave(true, false)
+						this.currentStreamingDidCheckpoint = true
+					}
+
 					// If the model did not tool use, then we need to tell it to
 					// either use a tool or attempt_completion.
 					const didToolUse = this.assistantMessageContent.some(
