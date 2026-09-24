@@ -19,6 +19,7 @@ import { TelemetryService } from "@roo-code/telemetry"
 
 import { Package } from "../../shared/package"
 import type { ApiHandlerOptions } from "../../shared/api"
+import { calculateApiCostOpenAI } from "../../shared/cost"
 
 import { ApiStream, ApiStreamUsageChunk } from "../transform/stream"
 import { getModelParams } from "../transform/model-params"
@@ -210,7 +211,14 @@ export class OpenAiCodexHandler extends BaseProvider implements SingleCompletion
 				? usage.output_tokens_details.reasoning_tokens
 				: undefined
 
-		// Subscription-based: no per-token costs
+		const { totalCost } = calculateApiCostOpenAI(
+			model.info,
+			totalInputTokens,
+			totalOutputTokens,
+			cacheWriteTokens,
+			cacheReadTokens,
+		)
+
 		const out: ApiStreamUsageChunk = {
 			type: "usage",
 			inputTokens: totalInputTokens,
@@ -218,7 +226,7 @@ export class OpenAiCodexHandler extends BaseProvider implements SingleCompletion
 			cacheWriteTokens,
 			cacheReadTokens,
 			...(typeof reasoningTokens === "number" ? { reasoningTokens } : {}),
-			totalCost: 0, // Subscription-based pricing
+			totalCost,
 		}
 		return out
 	}
