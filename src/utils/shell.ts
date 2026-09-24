@@ -1,4 +1,5 @@
 import * as vscode from "vscode"
+import { execSync } from "child_process"
 import { existsSync } from "fs"
 import { userInfo } from "os"
 import * as path from "path"
@@ -300,4 +301,40 @@ export function getShell(): string {
 	}
 
 	return shell
+}
+
+export class PwshNotFoundError extends Error {
+	constructor() {
+		super("pwsh not found")
+		this.name = "PwshNotFoundError"
+	}
+}
+
+let cachedWindowsPwshPath: string | null | undefined
+
+export function resolveWindowsPwshPath(platform: NodeJS.Platform = process.platform): string | null {
+	if (platform !== "win32") {
+		return null
+	}
+
+	if (cachedWindowsPwshPath !== undefined) {
+		return cachedWindowsPwshPath
+	}
+
+	try {
+		const output = execSync("where pwsh", {
+			encoding: "utf8",
+			stdio: ["ignore", "pipe", "ignore"],
+		})
+		const firstPath = output
+			.split(/\r?\n/)
+			.map((line) => line.trim())
+			.find((line) => line.length > 0)
+
+		cachedWindowsPwshPath = firstPath ?? null
+	} catch {
+		cachedWindowsPwshPath = null
+	}
+
+	return cachedWindowsPwshPath
 }

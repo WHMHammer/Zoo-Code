@@ -28,6 +28,7 @@ import { Package } from "../../shared/package"
 import { t } from "../../i18n"
 import { getTaskDirectoryPath } from "../../utils/storage"
 import { BaseTool, ToolCallbacks } from "./BaseTool"
+import { PwshNotFoundError } from "../../utils/shell"
 
 export { ShellIntegrationError } from "../../integrations/terminal/types"
 
@@ -511,6 +512,15 @@ export async function executeCommandInTerminal(
 
 		await Promise.race(racers)
 	} catch (error) {
+		if (error instanceof PwshNotFoundError) {
+			const message = "pwsh not found"
+			const status: CommandExecutionStatus = { executionId, status: "error", message }
+			postCommandExecutionStatus(provider, status)
+			await task.say("error", message)
+			task.didToolFailInCurrentTurn = true
+
+			return [false, message]
+		}
 		if (isUserTimedOut) {
 			const status: CommandExecutionStatus = { executionId, status: "timeout" }
 			postCommandExecutionStatus(provider, status)

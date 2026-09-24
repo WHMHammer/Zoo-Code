@@ -1,4 +1,4 @@
-import { execa, ExecaError } from "execa"
+import { execa, ExecaError, type Options as ExecaOptions } from "execa"
 import psTree from "ps-tree"
 import process from "process"
 
@@ -7,6 +7,7 @@ import { BaseTerminal } from "./BaseTerminal"
 import { BaseTerminalProcess } from "./BaseTerminalProcess"
 import { getShell } from "../../utils/shell"
 import { getUtf8LocaleEnv } from "./localeEnv"
+import { PwshNotFoundError, resolveWindowsPwshPath } from "../../utils/shell"
 
 export class ExecaTerminalProcess extends BaseTerminalProcess {
 	private terminalRef: WeakRef<RooTerminal>
@@ -38,11 +39,19 @@ export class ExecaTerminalProcess extends BaseTerminalProcess {
 	public override async run(command: string) {
 		this.command = command
 
+		let pwshPath: string | null = null
+		if (process.platform === "win32") {
+			pwshPath = resolveWindowsPwshPath()
+			if (!pwshPath) {
+				this.terminal.busy = false
+				throw new PwshNotFoundError()
+			}
+		}
+
 		try {
 			this.isHot = true
 
-			this.subprocess = execa({
-				shell: BaseTerminal.getExecaShellPath() || getShell(),
+			const execaOptions: ExecaOptions = {
 				cwd: this.terminal.getCurrentWorkingDirectory(),
 				all: true,
 				// Ignore stdin to ensure non-interactive mode and prevent hanging
@@ -53,7 +62,21 @@ export class ExecaTerminalProcess extends BaseTerminalProcess {
 					// fall back to en_US.UTF-8 so tools such as Ruby and CocoaPods still emit UTF-8.
 					...getUtf8LocaleEnv(),
 				},
-			})`${command}`
+			}
+
+			if (process.platform === "win32") {
+				const commandWithExitCode = `${command}\nexit ($LASTEXITCODE ?? $(if ($?) { 0 } else { 1 }))`
+				this.subprocess = execa(
+					pwshPath as string,
+					["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", commandWithExitCode],
+					execaOptions,
+				)
+			} else {
+				this.subprocess = execa({
+					shell: BaseTerminal.getExecaShellPath() || getShell(),
+					...execaOptions,
+				})`${command}`
+			}
 
 			this.pid = this.subprocess.pid
 
