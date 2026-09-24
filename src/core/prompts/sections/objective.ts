@@ -14,7 +14,7 @@ export function getObjectiveSection(policy: EffectiveToolPolicy): string {
 		? "ask the user to provide the missing parameters using the ask_followup_question tool"
 		: "state your assumptions and proceed with the best available value"
 	const completionStep = policy.tools.has("attempt_completion")
-		? "you must use the attempt_completion tool to present the result of the task to the user"
+		? "you must present the result of the task to the user in a text response, and then call the attempt_completion tool as a marker"
 		: "present the result of the task to the user"
 
 	return `====

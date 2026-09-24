@@ -457,9 +457,7 @@ export class NativeToolCallParser {
 				break
 
 			case "attempt_completion":
-				if (partialArgs.result) {
-					nativeArgs = { result: partialArgs.result }
-				}
+				nativeArgs = {}
 				break
 
 			case "execute_command":
@@ -786,9 +784,7 @@ export class NativeToolCallParser {
 					break
 
 				case "attempt_completion":
-					if (args.result) {
-						nativeArgs = { result: args.result } as NativeArgsFor<TName>
-					}
+					nativeArgs = {} as NativeArgsFor<TName>
 					break
 
 				case "execute_command":
