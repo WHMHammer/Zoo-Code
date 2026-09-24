@@ -285,7 +285,7 @@ items:
         content: >
           {
             "command": "npx",
-            "args": ["-y", "@azure-devops/mcp@1.0.0", "--hash", "sha1:742d3aa74ec8a13283a62c77c9fc5c2a0d276624", "{{AZURE_DEVOPS_ORG}}"]
+            "args": ["-y", "@azure-devops/mcp@latest", "--hash", "sha1:742d3aa74ec8a13283a62c77c9fc5c2a0d276624", "{{AZURE_DEVOPS_ORG}}"]
           }
         parameters:
           - name: Azure DevOps Organization
@@ -432,7 +432,7 @@ items:
         content: >
           {
             "command": "npx",
-            "args": ["-y", "@taazkareem/clickup-mcp-server@0.8.4", "--hash", "sha512:TuWPCubHFrRNbghj34th+QFdOqwGljs0QP55s+d73JhsFVoKaXFuS4c5bHat8qwV9UyF6hAeX87UP0SmeH/QRg=="],
+            "args": ["-y", "@taazkareem/clickup-mcp-server@latest", "--hash", "sha512:TuWPCubHFrRNbghj34th+QFdOqwGljs0QP55s+d73JhsFVoKaXFuS4c5bHat8qwV9UyF6hAeX87UP0SmeH/QRg=="],
             "env": {
               "CLICKUP_API_KEY": "{{CLICKUP_API_KEY}}",
               "CLICKUP_TEAM_ID": "{{CLICKUP_TEAM_ID}}",
@@ -970,7 +970,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "firebase-tools@14.15.2", "experimental:mcp"]
+            "args": ["-y", "firebase-tools@latest", "experimental:mcp"]
           }
       - name: NPX with Options
         prerequisites:
@@ -978,7 +978,7 @@ items:
         content: >
           {
             "command": "npx",
-            "args": ["-y", "firebase-tools@14.15.2", "experimental:mcp", "--dir", "{{FIREBASE_DIR}}", "--only", "{{FIREBASE_ONLY}}"]
+            "args": ["-y", "firebase-tools@latest", "experimental:mcp", "--dir", "{{FIREBASE_DIR}}", "--only", "{{FIREBASE_ONLY}}"]
           }
         parameters:
           - name: Project Directory
@@ -1175,7 +1175,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "mcp-remote@0.1.29", "https://gitmcp.io/{{OWNER}}/{{REPO}}"]
+            "args": ["-y", "mcp-remote@latest", "https://gitmcp.io/{{OWNER}}/{{REPO}}"]
           }
         parameters:
           - name: Owner
@@ -1348,7 +1348,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "@googlemaps/code-assist-mcp@0.2.0"]
+            "args": ["-y", "@googlemaps/code-assist-mcp@latest"]
           }
   - id: google-workspace
     name: Google Workspace
@@ -1743,7 +1743,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "n8n-mcp@2.12.2"],
+            "args": ["-y", "n8n-mcp@latest"],
             "env": {
               "MCP_MODE": "stdio",
               "LOG_LEVEL": "error",
@@ -1756,7 +1756,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "n8n-mcp@2.12.2"],
+            "args": ["-y", "n8n-mcp@latest"],
             "env": {
               "MCP_MODE": "stdio",
               "LOG_LEVEL": "error",
@@ -2096,7 +2096,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "@playwright/mcp@0.0.38"]
+            "args": ["-y", "@playwright/mcp@latest", "--browser=firefox"]
           }
       - name: Docker
         prerequisites:
@@ -2113,7 +2113,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "@playwright/mcp@0.0.38", "--port={{PORT}}", "--extension"]
+            "args": ["-y", "@playwright/mcp@latest", "--port={{PORT}}", "--extension"]
           }
         parameters:
           - name: Port
@@ -2126,7 +2126,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "@playwright/mcp@0.0.38", "--isolated", "--storage-state={{STORAGE_STATE_PATH}}"]
+            "args": ["-y", "@playwright/mcp@latest", "--isolated", "--storage-state={{STORAGE_STATE_PATH}}"]
           }
         parameters:
           - name: Storage State Path
@@ -2186,7 +2186,7 @@ items:
             "command": "npx",
             "args": [
               "-y",
-              "@supabase/mcp-server-postgrest@0.0.11",
+              "@supabase/mcp-server-postgrest@latest",
               "--apiUrl",
               "{{POSTGREST_API_URL}}",
               "--apiKey",
@@ -2203,7 +2203,7 @@ items:
             "command": "npx",
             "args": [
               "-y",
-              "@supabase/mcp-server-postgrest@0.0.11",
+              "@supabase/mcp-server-postgrest@latest",
               "--apiUrl",
               "https://{{SUPABASE_PROJECT_REF}}.supabase.co/rest/v1",
               "--apiKey",
@@ -2773,7 +2773,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "@supabase/mcp-server-supabase@0.5.5", "--access-token", "{{SUPABASE_ACCESS_TOKEN}}"]
+            "args": ["-y", "@supabase/mcp-server-supabase@latest", "--access-token", "{{SUPABASE_ACCESS_TOKEN}}"]
           }
     parameters:
       - name: Supabase Personal Access Token
@@ -2800,7 +2800,7 @@ items:
         content: |
           {
             "command": "npx",
-            "args": ["-y", "tavily-mcp@0.2.3"],
+            "args": ["-y", "tavily-mcp@latest"],
             "env": {
               "TAVILY_API_KEY": "{{TAVILY_API_KEY}}"
             }
