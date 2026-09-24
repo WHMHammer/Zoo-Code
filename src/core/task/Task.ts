@@ -151,6 +151,7 @@ import { shouldAddUserMessageToHistory } from "./messageCounting"
 import { type TaskExecutionContext } from "./providerHandoff"
 import { initialRunState, type Ask, type RunEvent, type RunState } from "./run-state/runState"
 import { applyRunEvent, type RunRejection } from "./run-state/runStateShadow"
+import { ToolResultBlockParam } from "@anthropic-ai/sdk/resources"
 
 const MAX_EXPONENTIAL_BACKOFF_SECONDS = 600 // 10 minutes
 const DEFAULT_USAGE_COLLECTION_TIMEOUT_MS = 5000 // 5 seconds
@@ -3234,6 +3235,23 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 							const existingToolResults = existingUserContent.filter(
 								(block) => block.type === "tool_result",
 							) as Anthropic.ToolResultBlockParam[]
+
+							if (
+								responseText &&
+								(!existingToolResults.length ||
+									existingToolResults.at(-1)!.tool_use_id !== toolUseBlocks.at(-1)!.id)
+							) {
+								const contentBlock: ToolResultBlockParam = {
+									tool_use_id: toolUseBlocks.at(-1)!.id,
+									type: "tool_result",
+									content: responseText,
+								}
+
+								existingUserContent.push(contentBlock)
+								responseText = undefined
+
+								existingToolResults.push(contentBlock)
+							}
 
 							const missingToolResponses: Anthropic.ToolResultBlockParam[] = toolUseBlocks
 								.filter(
