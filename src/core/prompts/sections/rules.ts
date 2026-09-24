@@ -129,7 +129,7 @@ export function getRulesSection(
 
 	rules.push(
 		hasAttemptCompletion
-			? "Do not ask for more information than necessary. Use the tools provided to accomplish the user's request efficiently and effectively. When you've completed your task, you must use the attempt_completion tool to present the result to the user. The user may provide feedback, which you can use to make improvements and try again."
+			? "Do not ask for more information than necessary. Use the tools provided to accomplish the user's request efficiently and effectively. When you've completed your task, you must present the result to the user in a text response, and then call the attempt_completion tool as a marker. The user may provide feedback, which you can use to make improvements and try again."
 			: "Do not ask for more information than necessary. Use the tools provided to accomplish the user's request efficiently and effectively. When you've completed your task, present the result to the user. The user may provide feedback, which you can use to make improvements and try again.",
 	)
 
@@ -167,7 +167,7 @@ export function getRulesSection(
 	rules.push(
 		"Your goal is to try to accomplish the user's task, NOT engage in a back and forth conversation.",
 		hasAttemptCompletion
-			? "NEVER end attempt_completion result with a question or request to engage in further conversation! Formulate the end of your result in a way that is final and does not require further input from the user."
+			? "NEVER call attempt_completion after responding with a question or request to engage in further conversation! Formulate the end of your result in a way that is final and does not require further input from the user."
 			: "NEVER end your result with a question or request to engage in further conversation! Formulate the end of your result in a way that is final and does not require further input from the user.",
 		'You are STRICTLY FORBIDDEN from starting your messages with "Great", "Certainly", "Okay", "Sure". You should NOT be conversational in your responses, but rather direct and to the point. For example you should NOT say "Great, I\'ve updated the CSS" but instead something like "I\'ve updated the CSS". It is important you be clear and technical in your messages.',
 		"When presented with images, utilize your vision capabilities to thoroughly examine them and extract meaningful information. Incorporate these insights into your thought process as you accomplish the user's task.",

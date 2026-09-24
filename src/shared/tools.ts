@@ -93,7 +93,6 @@ export type NativeToolArgs = {
 	access_mcp_resource: { server_name: string; uri: string }
 	read_file: import("@roo-code/types").ReadFileToolParams
 	read_command_output: { artifact_id: string; search?: string; offset?: number; limit?: number }
-	attempt_completion: { result: string }
 	execute_command: { command: string; cwd?: string; timeout?: number | null }
 	apply_diff: { path: string; diff: string }
 	edit: { file_path: string; old_string: string; new_string: string; replace_all?: boolean }
@@ -230,7 +229,7 @@ export interface AskFollowupQuestionToolUse extends ToolUse<"ask_followup_questi
 
 export interface AttemptCompletionToolUse extends ToolUse<"attempt_completion"> {
 	name: "attempt_completion"
-	params: Partial<Pick<Record<ToolParamName, string>, "result">>
+	params: Record<ToolParamName, never>
 }
 
 export interface SwitchModeToolUse extends ToolUse<"switch_mode"> {
