@@ -1,7 +1,7 @@
 import os from "os"
 import osName from "os-name"
 
-import { getShell } from "../../../utils/shell"
+import { getShell, resolveWindowsPwshPath } from "../../../utils/shell"
 
 import type { EffectiveToolPolicy } from "../tools/effective-tool-policy"
 
@@ -38,7 +38,7 @@ export function getSystemInfoSection(cwd: string, policy: EffectiveToolPolicy): 
 SYSTEM INFORMATION
 
 Operating System: ${osInfo}
-Default Shell: ${getShell()}
+Default Shell: ${process.platform === "win32" ? resolveWindowsPwshPath()?.toPosix() : getShell().toPosix()}
 Home Directory: ${os.homedir().toPosix()}
 Current Workspace Directory: ${cwd.toPosix()}
 
