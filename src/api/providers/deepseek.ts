@@ -55,9 +55,6 @@ export const normalizeDeepSeekReasoningEffort = (
 	// still check the modelId so non-supported models won't produce reasoning efforts
 	switch (modelId) {
 		case "deepseek-flash":
-		case "deepseek-v4-flash":
-		case "deepseek-v4-pro":
-		case "deepseek-v4-flash-vision-exp":
 			switch (reasoningEffort) {
 				case "low":
 					return "low"
