@@ -167,7 +167,7 @@ export async function parseMentions(
 		} else if (mention.startsWith("/")) {
 			// Clean path reference - no "see below" since we format like tool results
 			const mentionPath = mention.slice(1)
-			return mentionPath.endsWith("/") ? `'${mentionPath}'` : `'${mentionPath}'`
+			return `\`${mentionPath}\``
 		} else if (mention === "problems") {
 			return `Workspace Problems (see below for diagnostics)`
 		} else if (mention === "git-changes") {
@@ -191,7 +191,9 @@ export async function parseMentions(
 					showRooIgnoredFiles,
 					fileContextTracker,
 				)
-				contentBlocks.push(fileResult)
+				if (fileResult) {
+					contentBlocks.push(fileResult)
+				}
 			} catch (error) {
 				const errorMsg = error instanceof Error ? error.message : String(error)
 				contentBlocks.push({
@@ -268,7 +270,7 @@ async function getFileOrFolderContentWithMetadata(
 	rooIgnoreController?: any,
 	showRooIgnoredFiles: boolean = false,
 	fileContextTracker?: FileContextTracker,
-): Promise<MentionContentBlock> {
+): Promise<MentionContentBlock | null> {
 	const unescapedPath = unescapeSpaces(mentionPath)
 	const absPath = path.resolve(cwd, unescapedPath)
 	const isFolder = mentionPath.endsWith("/")
@@ -295,24 +297,25 @@ async function getFileOrFolderContentWithMetadata(
 				}
 			}
 			try {
-				const result = await extractTextFromFileWithMetadata(absPath)
+				// const result = await extractTextFromFileWithMetadata(absPath)
 
 				// Track file context
 				if (fileContextTracker) {
 					await fileContextTracker.trackFileContext(mentionPath, "file_mentioned")
 				}
 
-				return {
-					type: "file",
-					path: mentionPath,
-					content: formatFileReadResult(mentionPath, result),
-					metadata: {
-						totalLines: result.totalLines,
-						returnedLines: result.returnedLines,
-						wasTruncated: result.wasTruncated,
-						linesShown: result.linesShown,
-					},
-				}
+				// return {
+				// 	type: "file",
+				// 	path: mentionPath,
+				// 	content: formatFileReadResult(mentionPath, result),
+				// 	metadata: {
+				// 		totalLines: result.totalLines,
+				// 		returnedLines: result.returnedLines,
+				// 		wasTruncated: result.wasTruncated,
+				// 		linesShown: result.linesShown,
+				// 	},
+				// }
+				return null
 			} catch (error) {
 				const errorMsg = error instanceof Error ? error.message : String(error)
 				return {
@@ -324,7 +327,7 @@ async function getFileOrFolderContentWithMetadata(
 		} else if (stats.isDirectory()) {
 			const entries = await fs.readdir(absPath, { withFileTypes: true })
 			let folderListing = ""
-			const fileReadResults: string[] = []
+			// const fileReadResults: string[] = []
 			const LOCK_SYMBOL = "🔒"
 
 			for (let index = 0; index < entries.length; index++) {
@@ -351,10 +354,10 @@ async function getFileOrFolderContentWithMetadata(
 						const absoluteFilePath = path.resolve(absPath, entry.name)
 						try {
 							const isBinary = await isBinaryFile(absoluteFilePath).catch(() => false)
-							if (!isBinary) {
-								const result = await extractTextFromFileWithMetadata(absoluteFilePath)
-								fileReadResults.push(formatFileReadResult(filePath.toPosix(), result))
-							}
+							// if (!isBinary) {
+							// 	const result = await extractTextFromFileWithMetadata(absoluteFilePath)
+							// 	fileReadResults.push(formatFileReadResult(filePath.toPosix(), result))
+							// }
 						} catch (error) {
 							// Skip files that can't be read
 						}
@@ -367,10 +370,10 @@ async function getFileOrFolderContentWithMetadata(
 			}
 
 			// Format folder content similar to read_file output
-			let content = `[read_file for folder '${mentionPath}']\nFolder listing:\n${folderListing}`
-			if (fileReadResults.length > 0) {
-				content += `\n\n--- File Contents ---\n\n${fileReadResults.join("\n\n")}`
-			}
+			const content = `[read_file for folder '${mentionPath}']\nFolder listing:\n${folderListing}`
+			// if (fileReadResults.length > 0) {
+			// 	content += `\n\n--- File Contents ---\n\n${fileReadResults.join("\n\n")}`
+			// }
 
 			return {
 				type: "folder",
