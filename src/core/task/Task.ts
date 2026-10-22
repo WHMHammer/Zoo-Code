@@ -5057,6 +5057,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						)
 					}
 
+					await this.checkpointSave(true, false)
+
 					// If the model did not tool use, then we need to tell it to
 					// either use a tool or attempt_completion.
 					const didToolUse = this.assistantMessageContent.some(
