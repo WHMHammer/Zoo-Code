@@ -238,7 +238,7 @@ export type CheckpointRestoreOptions = {
 
 export async function checkpointRestore(
 	task: Task,
-	{ ts, commitHash, mode, operation = "delete" }: CheckpointRestoreOptions,
+	{ ts, commitHash, mode, operation }: CheckpointRestoreOptions,
 ) {
 	assertRecordedCheckpoint(task, commitHash)
 
@@ -271,8 +271,11 @@ export async function checkpointRestore(
 
 			// Use MessageManager to properly handle context-management events
 			// This ensures orphaned Summary messages and truncation markers are cleaned up
+			// A direct restore keeps the checkpoint_saved message so the same checkpoint
+			// stays restorable after the conversation continues. Only an explicit delete
+			// operation drops the checkpoint that follows the deleted message.
 			await task.messageManager.rewindToTimestamp(ts, {
-				includeTargetMessage: operation === "edit",
+				includeTargetMessage: operation !== "delete",
 			})
 
 			// Report the deleted API request metrics
