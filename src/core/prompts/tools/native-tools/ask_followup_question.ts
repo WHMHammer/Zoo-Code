@@ -4,13 +4,16 @@ const ASK_FOLLOWUP_QUESTION_DESCRIPTION = `Ask the user a question to gather add
 
 Parameters:
 - question: (required) A clear, specific question addressing the information needed
-- follow_up: (required) A list of 2-4 suggested answers. Suggestions must be complete, actionable answers without placeholders. Optionally include mode to switch modes (code/architect/etc.)
+- follow_up: (required) A list of suggested answers. Suggestions must be complete, actionable answers without placeholders. Optionally include mode to switch modes (code/architect/etc.) If the question is open, without clear answer options to choose from, pass an empty list.
 
 Example: Asking for file path
 { "question": "What is the path to the frontend-config.json file?", "follow_up": [{ "text": "./src/frontend-config.json", "mode": null }, { "text": "./config/frontend-config.json", "mode": null }, { "text": "./frontend-config.json", "mode": null }] }
 
 Example: Asking with mode switch
-{ "question": "Would you like me to implement this feature?", "follow_up": [{ "text": "Yes, implement it now", "mode": "code" }, { "text": "No, just plan it out", "mode": "architect" }] }`
+{ "question": "Would you like me to implement this feature?", "follow_up": [{ "text": "Yes, implement it now", "mode": "code" }, { "text": "No, just plan it out", "mode": "architect" }] }
+
+Example: Asking an open question
+{ "question": "What is your name?", "follow_up": [] }`
 
 const QUESTION_PARAMETER_DESCRIPTION = `Clear, specific question that captures the missing information you need`
 

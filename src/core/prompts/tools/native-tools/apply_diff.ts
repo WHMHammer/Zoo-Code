@@ -1,6 +1,8 @@
 import type OpenAI from "openai"
 
-const APPLY_DIFF_DESCRIPTION = `Apply precise, targeted modifications to an existing file using one or more search/replace blocks. This tool is for surgical edits only; the 'SEARCH' block must exactly match the existing content, including whitespace and indentation. To make multiple targeted changes, provide multiple SEARCH/REPLACE blocks in the 'diff' parameter. Use the 'read_file' tool first if you are not confident in the exact content to search for.`
+const APPLY_DIFF_DESCRIPTION = `Apply precise, targeted modifications to an existing file using one or more search/replace blocks. This tool is for surgical edits only; the 'SEARCH' block must exactly match the existing content, including whitespace and indentation. To make multiple targeted changes, provide multiple SEARCH/REPLACE blocks in the 'diff' parameter. Use the 'read_file' tool first if you are not confident in the exact content to search for. You must provide a clear explanation of what will be changed and why the changes are necessary before calling this tool.
+
+CRITICAL: This tool MUST be called alone. Do NOT call this tool alongside other tools in the same message turn. If you need to gather information before modifying, use other tools in a separate turn first, then call apply_diff by itself in the next turn. If you need to modify multiple files, call apply_diff again in next turns.`
 
 const DIFF_PARAMETER_DESCRIPTION = `A string containing one or more search/replace blocks defining the changes. The ':start_line:' is strongly recommended and indicates the starting line number of the original content. You must not add a start line for the replacement content. Each block must follow this format:
 <<<<<<< SEARCH
