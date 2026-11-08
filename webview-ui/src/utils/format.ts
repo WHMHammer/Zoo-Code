@@ -149,30 +149,6 @@ export const formatMessageTime = (
 		dateFormat = "auto",
 	}: { now?: number; timeFormat?: TimeFormat; dateFormat?: DateFormat } = {},
 ): string => {
-	const formatLocale = resolveLocale(locale)
-	const time = formatTimeOnly(timestamp, formatLocale, timeFormat)
-	const daysAgo = Math.round((startOfDay(now) - startOfDay(timestamp)) / DAY_MS)
-
-	if (daysAgo === 0 || daysAgo === 1) {
-		const label = new Intl.RelativeTimeFormat(formatLocale, { numeric: "auto" }).format(-daysAgo, "day")
-		// Sentence case: "today" -> "Today" (a no-op for scripts without case).
-		return `${label.charAt(0).toLocaleUpperCase(formatLocale)}${label.slice(1)} ${time}`
-	}
-
-	if (daysAgo > 1 && daysAgo < 7) {
-		return `${new Date(timestamp).toLocaleDateString(formatLocale, { weekday: "short" })} ${time}`
-	}
-
-	const sameYear = new Date(timestamp).getFullYear() === new Date(now).getFullYear()
-
-	if (dateFormat !== "auto") {
-		// Explicit numeric orders are always written in full so they stay unambiguous.
-		return `${formatDateOnly(timestamp, formatLocale, dateFormat)}, ${time}`
-	}
-
-	const date = new Date(timestamp).toLocaleDateString(
-		formatLocale,
-		sameYear ? { month: "short", day: "numeric" } : { month: "short", day: "numeric", year: "numeric" },
-	)
-	return `${date}, ${time}`
+	const date = new Date(timestamp)
+	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
