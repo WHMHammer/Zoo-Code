@@ -268,7 +268,7 @@ describe("useSelectedModel", () => {
 	)
 
 	it("selects static vision metadata when the DeepSeek catalog is unavailable", () => {
-		const modelId = "deepseek-v4-flash-vision-exp"
+		const modelId = "deepseek-flash"
 		mockUseRouterModels.mockReturnValue(createRouterModelsResult({ [providerIdentifiers.deepseek]: null }))
 		mockUseOpenRouterModelProviders.mockReturnValue(createOpenRouterModelProvidersResult({}))
 
