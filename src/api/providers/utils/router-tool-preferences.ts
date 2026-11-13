@@ -13,18 +13,6 @@ import type { ModelInfo } from "@roo-code/types"
  * @param info The original model info object
  * @returns A new model info object with tool preferences applied
  */
-export function applyRouterToolPreferences(modelId: string, info: ModelInfo): ModelInfo {
-	let result = info
-
-	// For OpenAI models via routers, exclude write_to_file and apply_diff, and include apply_patch
-	// This matches the behavior of the native OpenAI provider
-	if (modelId.includes("openai")) {
-		result = {
-			...result,
-			excludedTools: [...new Set([...(result.excludedTools || []), "apply_diff", "write_to_file"])],
-			includedTools: [...new Set([...(result.includedTools || []), "apply_patch"])],
-		}
-	}
-
-	return result
+export function applyRouterToolPreferences(_modelId: string, info: ModelInfo): ModelInfo {
+	return info
 }
