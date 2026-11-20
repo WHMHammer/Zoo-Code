@@ -27,10 +27,10 @@ export const deepSeekModels = {
 		preserveReasoning: true,
 		reasoningEffort: "high",
 		inputPrice: 0, // the inputs are priced as cache read/write, so `inputPrice` should be 0
-		// Static estimates use peak rates; off-peak rates are 50% lower. Effective 2026-09-10.
-		outputPrice: 1.2,
-		cacheWritesPrice: 0.3,
-		cacheReadsPrice: 0.006,
+		// 空闲时段人民币价格
+		outputPrice: 4,
+		cacheWritesPrice: 1,
+		cacheReadsPrice: 0.02,
 		description: `DeepSeek-V4.1-Flash is DeepSeek's fast multimodal model with image understanding. It supports thinking and non-thinking modes, JSON output, tool calls, chat prefix completion (beta), and FIM completion (beta) in non-thinking mode.`,
 	},
 	"deepseek-v4-flash": {
