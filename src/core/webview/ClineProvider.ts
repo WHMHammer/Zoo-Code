@@ -91,7 +91,7 @@ import { CloudService, getRooCodeApiUrl } from "@roo-code/cloud"
 import { Package } from "../../shared/package"
 import { findLast } from "../../shared/array"
 import { supportPrompt } from "../../shared/support-prompt"
-import { generatedSegments, joinSegments } from "../../shared/mentionSegments"
+import { generatedSegments, joinSegments, userSegments } from "../../shared/mentionSegments"
 import { GlobalFileNames } from "../../shared/globalFileNames"
 import { Mode, defaultModeSlug, getModeBySlug } from "../../shared/modes"
 import { experimentDefault } from "../../shared/experiments"
@@ -4984,6 +4984,7 @@ export class ClineProvider
 			initialTodos,
 			initialStatus: "active",
 			startTask: false,
+			segments: userSegments(message),
 			handoffExecutionContext,
 		})
 
