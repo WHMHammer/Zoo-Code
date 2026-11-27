@@ -1,5 +1,5 @@
 import { ClineMessage, HistoryItem, MentionSegment } from "@roo-code/types"
-import { generatedSegments } from "@roo/mentionSegments"
+import { userSegments } from "@roo/mentionSegments"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 interface UsePromptHistoryProps {
@@ -120,9 +120,8 @@ export const usePromptHistory = ({
 			if (!historicalPrompt) return false
 
 			setHistoryIndex(newIndex)
-			// Stored prompts carry no segments, so they authorize nothing.
 			if (setInputValueWithSegments) {
-				setInputValueWithSegments(historicalPrompt, generatedSegments(historicalPrompt))
+				setInputValueWithSegments(historicalPrompt, userSegments(historicalPrompt))
 			} else {
 				setInputValue(historicalPrompt)
 			}
